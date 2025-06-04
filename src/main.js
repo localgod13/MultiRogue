@@ -19,6 +19,10 @@ class App {
     const joinCodeInput = document.getElementById('join-code');
     const colorOptions = document.querySelectorAll('.color-option');
 
+    console.log('Setting up event listeners...');
+    console.log('Host button:', hostBtn);
+    console.log('Join button:', joinBtn);
+
     let selectedColor = '#ff0000';
     colorOptions.forEach(option => {
       option.addEventListener('click', () => {
@@ -28,8 +32,20 @@ class App {
       });
     });
 
-    hostBtn.addEventListener('click', () => this.hostGame(playerNameInput.value, selectedColor));
-    joinBtn.addEventListener('click', () => this.joinGame(joinCodeInput.value, playerNameInput.value, selectedColor));
+    hostBtn.addEventListener('click', () => {
+      console.log('Host button clicked');
+      console.log('Player name:', playerNameInput.value);
+      console.log('Selected color:', selectedColor);
+      this.hostGame(playerNameInput.value, selectedColor);
+    });
+
+    joinBtn.addEventListener('click', () => {
+      console.log('Join button clicked');
+      console.log('Room code:', joinCodeInput.value);
+      console.log('Player name:', playerNameInput.value);
+      console.log('Selected color:', selectedColor);
+      this.joinGame(joinCodeInput.value, playerNameInput.value, selectedColor);
+    });
   }
 
   setupNetworkCallbacks() {
@@ -54,13 +70,16 @@ class App {
   }
 
   async hostGame(playerName, color) {
+    console.log('hostGame called with:', { playerName, color });
     if (!playerName) {
       alert('Please enter your name');
       return;
     }
 
     try {
+      console.log('Attempting to host game...');
       const roomCode = await this.network.hostGame();
+      console.log('Game hosted successfully with room code:', roomCode);
       this.network.playerData = { name: playerName, color };
       
       document.getElementById('ui-container').classList.add('hidden');
@@ -101,5 +120,12 @@ class App {
 
 // Start the app when the page loads
 window.addEventListener('load', () => {
-  new App();
+  console.log('Window loaded, initializing app...');
+  try {
+    const app = new App();
+    console.log('App initialized successfully');
+    window.app = app; // Make app globally accessible for debugging
+  } catch (error) {
+    console.error('Failed to initialize app:', error);
+  }
 }); 
